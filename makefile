@@ -2,6 +2,9 @@ _FOLDERS = settings repos zips notifications web/cache
 
 .PHONY: all default dev docs check clean folders config submodules lint-venv-config
 
+user_group := $(shell id -u):$(shell id -g)
+DOCKER_COMPOSE_COMMAND := USER_GROUP=$(user_group) docker-compose
+
 # Useful groupings
 default: dev
 all: dev docs submodules config
@@ -59,3 +62,14 @@ metapackages/deb/srobo-ide.deb: metapackages/deb/srobo-ide/DEBIAN/control
 
 check: all
 	./run-tests
+
+
+# Run Docker commands
+docker-run-ide:
+	docker-compose run ide
+
+docker-develop:
+	$(DOCKER_COMPOSE_COMMAND) run dev
+
+docker-run-tests:
+	$(DOCKER_COMPOSE_COMMAND) run dev run-tests

@@ -19,8 +19,7 @@ WORKDIR /repo
 
 RUN python --version \
     && pip install -r pylint-requirements.txt \
-    && echo "pylint.path = $(which pylint)" >> config/automagic.ini \
-    && echo "python.path = $(which python)" >> config/automagic.ini \
+    && make dev config/automagic.ini \
     && cat config/automagic.ini
 
 RUN echo 'URL = "http://localhost:8000/"' > tests/http/localconfig.py

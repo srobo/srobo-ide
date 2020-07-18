@@ -60,14 +60,74 @@ By default you can login with any non-empty username and password.
 
 ### Running with Docker
 
-Install Docker, build the image, then run it.
+First install [Docker][docker-install] (and [optionally `docker-compose`][docker-compose-install]).
 
-```
+[docker-install]: https://docs.docker.com/get-docker/
+[docker-compose-install]: https://docs.docker.com/compose/install/
+
+If you just want to run the IDE without developing and without installing local 
+requirements, you can build and run it in Docker.
+
+```shell script
 docker build -t srobo-ide:local .
-docker run -d --rm --network=host -t srobo-ide:local
+docker run -d --network=host -t srobo-ide:local
 ```
 
 Then visit http://localhost:8080
+
+#### Developing in Docker
+
+Alternatively you may want to actually develop with the code running in Docker. 
+In order to do this, you will need to mount your code in the Docker container. You 
+can then open a shell in the contain to run anything as you would locally. A
+`docker-compose.yml` file is provided to help with this. 
+
+The file `local_tests_config.py` will be mounted into `tests/http/localconfig.py`.
+
+Manually:
+```shell script
+docker build -t srobo-ide:local .
+
+# open a shell in the container and do whatever you want
+# the steps are:
+#   mount the current directory under /repo
+#   mount the tests config in the right place
+#   run as the current host user
+#   use host networking (could do -p/-P here)
+#   run bash instead of the php server
+docker run \
+  -v $(pwd):/repo \
+  -v $(pwd)/local_tests_config.py:/repo/tests/http/localconfig.py \
+  -u $(id -u ${USER}):$(id -g ${USER}) \
+  --network=host \
+  --entrypoint=/bin/bash \
+  -it srobo-ide:local
+
+# OR run the tests in the container directly
+docker run \
+  -v $(pwd):/repo \
+  -v $(pwd)/local_tests_config.py:/repo/tests/http/localconfig.py \
+  -u $(id -u ${USER}):$(id -g ${USER}) \
+  --network=host \
+  --entrypoint=/bin/bash \
+  srobo-ide:local run-tests
+```
+
+With `docker-compose` and `make`:
+*We can set the container user by setting the USER_GROUP environment variable to
+`uid:gid`. If you skip this, the container will not be able to write to the host
+directory.*
+
+```shell script
+# run the IDE in the container without mounting the host file system
+docker-compose run ide  # make docker-run-ide
+
+# OR open a shell in the container
+USER_GROUP="$(id -u):$(id -g)" docker-compose run dev  # make docker-develop
+
+# OR run the tests directly in the container
+USER_GROUP="$(id -u):$(id -g)" docker-compose run dev run-tests # make docker-run-tests
+```
 
 ### Apache HTTPD
 

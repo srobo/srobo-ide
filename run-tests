@@ -1,2 +1,3 @@
 #!/bin/bash
+make dev
 exec tests/run-tests $*
