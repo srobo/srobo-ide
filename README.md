@@ -56,6 +56,8 @@ The PHP [development server][php-web-server] can be run via `php -S localhost:80
 
 By default you can login with any non-empty username and password.
 
+[php-web-server]: https://www.php.net/manual/en/features.commandline.webserver.php
+
 ### Running with Docker
 
 Install Docker, build the image, then run it.
@@ -66,8 +68,6 @@ docker run -d --rm --network=host -t srobo-ide:local
 ```
 
 Then visit http://localhost:8080
-
-[php-web-server]: https://www.php.net/manual/en/features.commandline.webserver.php
 
 ### Apache HTTPD
 
