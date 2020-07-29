@@ -1,0 +1,30 @@
+version: '3.4'
+
+# helper templates
+x-ide:
+  &default-ide
+  build: .
+  user: "${USER_GROUP}"
+  ports:
+    - 8000:8000
+
+x-volumes:
+  &default-volumes
+  volumes:
+    - .:/repo
+    - ./local_tests_config.py:/repo/tests/http/localconfig.py
+
+# docker service configuration
+networks:
+  default:
+    external:
+      name: host
+
+services:
+  ide:
+    <<: *default-ide
+
+  dev:
+    <<: *default-ide
+    <<: *default-volumes
+    entrypoint: /bin/bash
